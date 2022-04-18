@@ -1,0 +1,26 @@
+name: Preview DEV
+on:
+    pull_request:
+      branches: dev
+jobs:
+    preview:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v2
+
+          - uses: actions/setup-node@v2
+            with:
+              node-version: 14.x
+
+          - name: Install Dependencies
+            env:
+              NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+              NPM_CONFIG_USERCONFIG: .npmrc
+            run: npm ci
+
+          - uses: pulumi/actions@v3
+            with:
+              command: preview
+              stack-name: gpstrackit/dev
+            env:
+              PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
